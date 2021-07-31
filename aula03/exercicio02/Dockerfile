@@ -2,9 +2,12 @@ FROM python:3.8
 
 WORKDIR /code
 
+RUN mkdir data
+
+COPY data/data1.txt data/data1.txt
+COPY data/data2.txt data/data2.txt
+
 COPY model.py .
-COPY data1.txt .
-COPY data2.txt .
 
 # install dependencies
 RUN pip3 install nltk
