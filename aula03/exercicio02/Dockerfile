@@ -9,4 +9,4 @@ RUN pip3 install matplotlib
 
 COPY . .
 
-CMD ["python3", "model.py", "data/data2.txt"]
+CMD ["python3", "model.py"]
