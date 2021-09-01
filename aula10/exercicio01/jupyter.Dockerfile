@@ -11,4 +11,8 @@ EXPOSE 8888
 
 WORKDIR /opt/workspace
 
+RUN curl https://github.com/ezambomsantana/curso-computacao-nuvem/raw/main/aula11/train_test_small.csv.zip -o dataset.zip
+RUN apt install unzip
+RUN ls
+
 CMD jupyter lab --ip 0.0.0.0 --port=8888 --no-browser --allow-root --NotebookApp.token=
