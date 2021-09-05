@@ -1,4 +1,4 @@
-FROM base
+FROM ezambomsantana/base
 
 ARG spark_version=3.1.2
 ARG jupyter_version=3.1.9
@@ -6,6 +6,7 @@ ARG jupyter_version=3.1.9
 RUN apt install -y python3 python3-pip
 
 RUN pip3 install pyspark==${spark_version} jupyterlab==${jupyter_version} wget
+RUN pip3 install numpy
 
 EXPOSE 8888
 
