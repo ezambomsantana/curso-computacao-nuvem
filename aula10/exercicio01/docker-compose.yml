@@ -16,7 +16,7 @@ services:
         image: ezambomsantana/spark-worker
         container_name: spark-worker-1
         environment:
-            - SPARK_WORKER_CORES=1
+            - SPARK_WORKER_CORES=4
             - SPARK_WORKER_MEMORY=2048m
         ports:
             - 8081:8081
@@ -28,7 +28,31 @@ services:
         image: ezambomsantana/spark-worker
         container_name: spark-worker-2
         environment:
-            - SPARK_WORKER_CORES=1
+            - SPARK_WORKER_CORES=4
+            - SPARK_WORKER_MEMORY=2048m
+        ports:
+            - 8082:8081
+        volumes:
+            - shared-workspace:/opt/workspace
+        depends_on:
+            - spark-master
+    spark-worker-3:
+        image: ezambomsantana/spark-worker
+        container_name: spark-worker-3
+        environment:
+            - SPARK_WORKER_CORES=4
+            - SPARK_WORKER_MEMORY=2048m
+        ports:
+            - 8082:8081
+        volumes:
+            - shared-workspace:/opt/workspace
+        depends_on:
+            - spark-master
+    spark-worker-4:
+        image: ezambomsantana/spark-worker
+        container_name: spark-worker-4
+        environment:
+            - SPARK_WORKER_CORES=4
             - SPARK_WORKER_MEMORY=2048m
         ports:
             - 8082:8081
