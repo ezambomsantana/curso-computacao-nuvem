@@ -1,0 +1,63 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: spark-main
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: spark-main
+  template: 
+    metadata:
+      labels:
+        app.kubernetes.io/name: spark-main
+    spec:
+      hostname: spark-main
+      containers:
+        - name: spark-main
+          image: ezambomsantana/spark-master
+          volumeMounts:
+          - mountPath: /opt/workspace
+            name: volume
+          ports:
+            - containerPort: 7077
+            - containerPort: 8080
+          env:
+            - name: SPARK_MASTER_HOST
+              value: spark-main
+            - name: SPARK_MASTER_PORT
+              value: "7077"
+            - name: SPARK_MASTER_WEBUI_PORT
+              value: "8080"
+            - name: SPARK_LOCAL_IP
+              value: "127.0.0.1"
+          resources:
+            requests:
+              memory: "1024Mi"
+              cpu: "250m"
+            limits:
+              memory: "1024Mi"
+              cpu: "500m"
+      volumes:
+      - name: volume
+        persistentVolumeClaim:
+          claimName: task-pv-claim
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: spark-main
+  labels:
+    app.kubernetes.io/name: spark-main
+spec:
+  ports:
+    - name: master
+      port: 7077
+      targetPort: 7077
+      protocol: TCP
+    - name: ui
+      port: 8080
+      targetPort: 8080
+      protocol: TCP
+  selector:
+    app.kubernetes.io/name: spark-main

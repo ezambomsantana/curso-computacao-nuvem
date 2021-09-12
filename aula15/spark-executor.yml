@@ -1,0 +1,63 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: spark-executor
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: spark-executor
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: spark-executor
+    spec:
+      hostname: spark-executor
+      containers:
+        - name: spark-executor
+          image: ezambomsantana/spark-worker
+          volumeMounts:
+          - mountPath: /opt/workspace
+            name: volume
+          ports:
+            - containerPort: 8081
+          env:
+            - name: SPARK_MASTER_HOST
+              value: spark-main
+            - name: SPARK_MASTER_PORT
+              value: "7077"
+            - name: SPARK_WORKER_HOST
+              value: "spark-executor"
+            - name: SPARK_WORKER_PORT
+              value: "8081"
+            - name: SPARK_WORKER_CORES
+              value: "4"
+            - name: SPARK_WORKER_MEMORY
+              value: 1024m
+            - name: SPARK_LOCAL_IP
+              value: "127.0.0.1"
+          resources:
+            requests:
+              memory: "1024Mi"
+              cpu: "250m"
+            limits:
+              memory: "1024Mi"
+              cpu: "500m"
+      volumes:
+      - name: volume
+        persistentVolumeClaim:
+          claimName: task-pv-claim
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: spark-executor
+  labels:
+    app.kubernetes.io/name: spark-executor
+spec:
+  ports:
+    - port: 8081
+      targetPort: 8081
+      protocol: TCP
+  selector:
+    app.kubernetes.io/name: spark-executor
