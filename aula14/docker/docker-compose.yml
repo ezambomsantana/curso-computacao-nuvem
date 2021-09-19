@@ -1,0 +1,34 @@
+version: "3.1"
+volumes:
+  shared-workspace:
+      name: "file-system"
+      driver: "local"
+services:
+  scheduler:
+    image: ezambomsantana/dask:latest
+    hostname: scheduler
+    ports:
+      - "8786:8786"
+      - "8787:8787"
+    command: ["dask-scheduler"]
+    volumes:
+      - shared-workspace:/tmp
+
+  worker:
+    image: ezambomsantana/dask:latest
+    command: ["dask-worker", "tcp://scheduler:8786"]
+    # For Docker swarm you can specify multiple workers, this is ignored by `docker-compose up`
+    deploy:
+      replicas: 2
+    volumes:
+      - shared-workspace:/tmp
+
+  notebook:
+    image: ezambomsantana/dask-notebook:latest
+    ports:
+      - "8888:8888"
+    environment:
+      - DASK_SCHEDULER_ADDRESS="tcp://scheduler:8786"
+      - GRANT_SUDO=yes
+    volumes:
+      - shared-workspace:/tmp
