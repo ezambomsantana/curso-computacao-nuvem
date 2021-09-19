@@ -17,9 +17,16 @@ spec:
         - name: dask-scheduler
           image: ezambomsantana/dask:latest
           command: ["dask-scheduler"]
+          volumeMounts:
+          - mountPath: /tmp
+            name: volume
           ports:
             - containerPort: 8786
             - containerPort: 8787
+      volumes:
+      - name: volume
+        persistentVolumeClaim:
+          claimName: task-pv-claim
 ---
 apiVersion: v1
 kind: Service
