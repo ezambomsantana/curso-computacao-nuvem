@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dask-worker
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: dask-worker
+  template: 
+    metadata:
+      labels:
+        app.kubernetes.io/name: dask-worker
+    spec:
+      hostname: dask-worker
+      containers:
+        - name: dask-worker
+          image: ezambomsantana/dask
+          volumeMounts:
+          - mountPath: /tmp
+            name: volume
+          command: ["dask-worker"]
+          args: ["tcp://dask-scheduler:8786"]
+          env:
+            - name: SPARK_MASTER_HOST
+              value: dask-worker
+      volumes:
+      - name: volume
+        persistentVolumeClaim:
+          claimName: task-pv-claim

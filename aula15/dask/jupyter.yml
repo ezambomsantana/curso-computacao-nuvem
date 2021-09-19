@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dask-jupyter
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: dask-jupyter
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: dask-jupyter
+    spec:
+      hostname: dask-jupyter
+      containers:
+        - name: dask-jupyter
+          image: ezambomsantana/dask-notebook
+          volumeMounts:
+          - mountPath: /tmp
+            name: volume
+          ports:
+            - containerPort: 8888
+          env:
+            - name: DASK_SCHEDULER_ADDRESS
+              value: "tcp://dask-scheduler:8786"
+      volumes:
+      - name: volume
+        persistentVolumeClaim:
+          claimName: task-pv-claim
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: dask-jupyter
+  labels:
+    app.kubernetes.io/name: dask-jupyter
+spec:
+  ports:
+    - port: 8880
+      targetPort: 8888
+      protocol: TCP
+  selector:
+    app.kubernetes.io/name: dask-jupyter
