@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: jupyter
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: jupyter
+  template:
+    spec:
+      hostname: jupyter
+      containers:
+        - name: jupyter
+          image: ezambomsantana/dask-notebook
+          ports:
+            - containerPort: 8888
+          env:
+            - name: DASK_SCHEDULER_ADDRESS
+              value: "tcp://dask-scheduler:8786"
+    metadata:
+      labels:
+        app.kubernetes.io/name: jupyter
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: jupyter
+  labels:
+    app.kubernetes.io/name: jupyter
+spec:
+  ports:
+    - name: main
+      port: 8888
+      targetPort: 8888
+      protocol: TCP
+  selector:
+    app.kubernetes.io/name: jupyter

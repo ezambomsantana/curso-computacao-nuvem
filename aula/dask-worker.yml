@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dask-worker
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: dask-worker
+  template:
+    spec:
+      hostname: dask-worker
+      containers:
+        - name: dask-worker
+          image: ezambomsantana/dask:latest
+          command: ["dask-worker"]
+          args: ["tcp://dask-scheduler:8786"]
+    metadata:
+      labels:
+        app.kubernetes.io/name: dask-worker

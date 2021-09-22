@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dask-scheduler
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: dask-scheduler
+  template:
+    spec:
+      hostname: dask-scheduler
+      containers:
+        - name: dask-scheduler
+          image: ezambomsantana/dask:latest
+          command: ["dask-scheduler"]
+          ports:
+            - containerPort: 8786
+            - containerPort: 8787
+    metadata:
+      labels:
+        app.kubernetes.io/name: dask-scheduler
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: dask-scheduler
+  labels:
+    app.kubernetes.io/name: dask-scheduler
+spec:
+  ports:
+    - name: main
+      port: 8786
+      targetPort: 8786
+      protocol: TCP
+    - name: web
+      port: 8787
+      targetPort: 8787
+      protocol: TCP
+  selector:
+    app.kubernetes.io/name: dask-scheduler
